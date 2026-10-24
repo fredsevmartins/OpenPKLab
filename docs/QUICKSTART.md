@@ -1,6 +1,18 @@
 # OpenPKLab visual quickstart
 
-From experimental data to a traceable scientific notebook. Follow the eight steps below; they correspond to the workflow image in the README.
+OpenPKLab is a digital laboratory notebook: it keeps an experiment's objective, methods, original files, observations and calculations together. A connected ChatGPT session can help you operate the notebook through a conversation. Your records are stored on the computer or server running OpenPKLab.
+
+This guide walks through one complete example so you can see what the project produces before configuring a ChatGPT connection. For the project's purpose, benefits and supported research categories, read [What is OpenPKLab?](../README.md).
+
+## Choose your starting point
+
+| Your goal | What to do |
+| --- | --- |
+| See the software working on synthetic data | Run the complete local example below. No ChatGPT account or remote server is needed. |
+| Use ChatGPT to manage your notebook | Try the example first, then follow step 2 and [ChatGPT setup](CHATGPT_SETUP.md). |
+| Record your own research | Create an experiment through a connected MCP client, supply its methods/context and upload the actual files in steps 3–4. |
+
+By the end of the local example, you will have a saved experiment, a checked CSV, a concentration-time figure, reproducible PK calculations and a ZIP report. The eight numbered steps explain how to carry out the same workflow with a connected assistant.
 
 ![OpenPKLab workflow: install, connect, create, upload, organize and validate, run science, review hints, export.](assets/openpklab-workflow.png)
 
@@ -10,7 +22,7 @@ The table and concentration-time curve are synthetic illustrations based on `exa
 
 ## Run the complete example first
 
-After installing Python 3.12+ and [uv](https://docs.astral.sh/uv/), run:
+Install Git, Python 3.12+ and [uv](https://docs.astral.sh/uv/), then run these commands in a terminal from a Unix-style shell (for Windows, use WSL):
 
 ```bash
 git clone https://github.com/fredsevmartins/OpenPKLab.git
@@ -22,6 +34,24 @@ uv run --frozen python examples/mcp_workflow.py --data-dir .data
 The example launches the real MCP server and communicates with it using the official SDK's stdio client. It creates a fresh experiment, saves a method and observation, explicitly uploads the bundled CSV through the local CLI, annotates it, checks data quality, runs NCA, generates a plot, retrieves hints and exports a complete ZIP. It checks the source/export hashes and analytical calculation results before printing the summary.
 
 It requires no account, network service, API key or ChatGPT login after dependencies are installed. Each run creates a different experiment and export, preserving earlier runs. It does not automatically accept scientific suggestions. The final JSON prints the experiment ID and `archive_path`; extract that ZIP and open `report.md` alongside its relative `files/` assets. The report records missing methods explicitly.
+
+### Understand what you receive
+
+The terminal prints a JSON summary at the end. These fields tell you where the experiment and its outputs are:
+
+| Output field | Meaning / next action |
+| --- | --- |
+| `experiment_id` | The saved notebook record to retrieve in a connected client. Copy it when asking about this particular run. |
+| `data_origin` | `synthetic`: the demonstration contains no measured laboratory data. |
+| `nca` and `units` | Calculated PK summaries and their units. Compare them with the expected values below. |
+| `figure_id` | The saved concentration-time figure associated with this experiment. |
+| `missing_methodology` | Details not documented in this software example. Real studies need researcher-supplied methods. |
+| `archive_path` | The ZIP on your computer. Extract it and open `report.md` with a Markdown viewer. |
+| `archive_sha256` | A checksum for checking the exported archive's integrity. |
+
+After extracting the ZIP, keep `report.md`, `notebook.json` and the `files/` folder together. The report includes scientific sections and links to its figure/table sources. The CSV contains the unchanged source data; the PNG is a derived graph; the JSON contains the recorded history.
+
+The command finishes after completing the example. For everyday use, a local MCP client launches the stdio server, or a running authenticated HTTP server handles requests from a configured remote client. Publishing the source to GitHub does not start that service or automatically connect ChatGPT.
 
 For the bundled synthetic data, expect:
 
@@ -117,6 +147,20 @@ uv run --frozen openpklab --data-dir .data export synthetic-pk synthetic-pk.zip
 ```
 
 The example already prints a ready ZIP's local `archive_path`; no second export is needed. Remote download paths require authentication and are not public share links. Protect exported notebooks like the original research data.
+
+## Practical notes for first use
+
+**Trying the software locally.** The runnable example uses a local MCP client and performs the complete synthetic workflow after installation. ChatGPT is an optional conversational interface that needs its own configured connection.
+
+**Finding your records.** With the commands in this guide, records live in the `.data` directory on the machine running the server. Original objects, database records and exports remain there after the example exits. Preserve that directory and follow the backup instructions in [Installation](INSTALLATION.md).
+
+**Using a real table.** Explicitly upload it to the notebook server through the local CLI or authenticated endpoint. Then give the connected assistant its returned file ID and actual units. The notebook server cannot assume a chat attachment was forwarded to it.
+
+**Understanding the assistant's role.** It can retrieve recorded context, request tools and explain findings or propose next steps. OpenPKLab's built-in hints screen recorded data and missing documentation. Researcher review is required before treating an interpretation or proposed action as scientifically justified.
+
+**Recognizing a successful example.** The command exits successfully, prints the expected PK values and points to an existing ZIP containing the report, original CSV and generated PNG. The script checks the analytical results and file checksums itself; it fails if those checks do not match.
+
+**Completing the scientific record.** Missing report sections remain identified as missing. Supply the actual protocol and conditions; suggestions do not establish that a procedure was performed.
 
 ## Find more detail
 
