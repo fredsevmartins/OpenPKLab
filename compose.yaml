@@ -1,0 +1,47 @@
+services:
+  openpklab:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      OPENPKLAB_TOKEN: ${OPENPKLAB_TOKEN:-}
+      OPENPKLAB_PUBLIC_URL: ${OPENPKLAB_PUBLIC_URL:-}
+      OPENPKLAB_OAUTH_ISSUER: ${OPENPKLAB_OAUTH_ISSUER:-}
+      OPENPKLAB_OAUTH_AUDIENCE: ${OPENPKLAB_OAUTH_AUDIENCE:-}
+      OPENPKLAB_OAUTH_JWKS_URL: ${OPENPKLAB_OAUTH_JWKS_URL:-}
+      OPENPKLAB_OWNER_SUB: ${OPENPKLAB_OWNER_SUB:-}
+    volumes:
+      - notebook:/data
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/healthz', timeout=5)"]
+      interval: 15s
+      timeout: 6s
+      retries: 5
+  https:
+    image: caddy:2.10.2-alpine
+    profiles: ["https"]
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      OPENPKLAB_DOMAIN: ${OPENPKLAB_DOMAIN:-localhost}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      openpklab:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  notebook:
+  caddy_data:
+  caddy_config:

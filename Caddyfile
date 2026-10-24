@@ -1,0 +1,7 @@
+{$OPENPKLAB_DOMAIN} {
+    request_body {
+        max_size 11MB
+    }
+    reverse_proxy openpklab:8000
+    header X-Content-Type-Options nosniff
+}

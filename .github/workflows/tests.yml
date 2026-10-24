@@ -1,0 +1,41 @@
+name: Tests
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.12.23'
+          enable-cache: true
+      - run: uv sync --frozen --extra dev --python 3.12
+      - run: uv run --frozen --extra dev pytest -q --junitxml=results.xml
+      - run: uv build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: results.xml
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t openpklab:test .
+      - name: Authenticated container smoke test
+        shell: bash
+        run: |
+          set -euo pipefail
+          export OPENPKLAB_TOKEN=$(python -c 'import secrets; print(secrets.token_urlsafe(48))')
+          docker run -d --name openpklab -p 127.0.0.1:8000:8000 -e OPENPKLAB_TOKEN openpklab:test
+          trap 'docker rm -f openpklab' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:8000/healthz; then break; fi
+            sleep 1
+          done
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/mcp)" = 401
+          curl -fsS http://127.0.0.1:8000/mcp -H "Authorization: Bearer $OPENPKLAB_TOKEN" -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' --data '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"ci","version":"1"}}}'
