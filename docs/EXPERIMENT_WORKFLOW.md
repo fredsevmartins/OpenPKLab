@@ -1,5 +1,7 @@
 # Experimental workflow
 
+Start with the [illustrated eight-step quickstart](QUICKSTART.md) or run `uv run --frozen python examples/mcp_workflow.py --data-dir .data` from the repository root for a complete synthetic MCP example.
+
 ## Create and document
 
 Use `create_experiment` with a title, category and optional objective, hypothesis, conditions and researcher ID. Categories: `in_vitro`, `in_vivo`, `pharmacokinetic`, `pharmacodynamic`, `translational_pkpd`. IDs accept letters, digits, underscores and hyphens. Generated IDs are UUIDs.

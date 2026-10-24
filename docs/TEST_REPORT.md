@@ -41,13 +41,21 @@ These are software simulations, not biological validation of metabolism/permeabi
 - Docker Compose configuration validated. Public DNS, Caddy certificate issuance and an externally deployed OAuth provider were not provisioned or tested.
 - Documented local CLI create/upload/export commands executed against a temporary synthetic notebook and passed. Existing export destinations are protected from overwrite.
 - `detect-secrets` 1.5.0 scanned the Git candidate files: zero findings. `.env`, runtime databases, uploads, caches, build outputs and temporary notebooks are excluded from Git. This is a secret-pattern scan, not a comprehensive independent security audit.
-- Git whitespace check and source parsing passed. GitHub Actions is configured to run the automated suite, package build and container smoke test; a hosted Actions execution is not claimed without its result.
+- Git whitespace check and source parsing passed. GitHub Actions is configured to run the automated suite, package build and container smoke test; the verified hosted result is recorded in the visual-workflow section below.
+
+## Visual workflow and runnable guide
+
+The repository includes the eight-step workflow thumbnail in `docs/assets/openpklab-workflow.png`, its accessible written guide in `docs/QUICKSTART.md`, and the runnable `examples/mcp_workflow.py`. The table/chart depict only the bundled synthetic data, without unsupported fitted models.
+
+The example was executed twice through the official stdio MCP client against the same temporary data directory. Both runs created independent experiments, retained the original CSV, reproduced Cmax 16, Tmax 0, AUClast 22.5 and exploratory half-life 1, stored a derived PNG, and exported checksummed ZIPs containing the report, JSON history and both files. The second run preserved the first run's experiment and export. No suggestion feedback was automatically accepted. These are additional executed examples, not additions to the 113 pytest count above.
+
+The original MVP commit `4ab10ea4e51aaa8a62bb05ca076104d64e08a588` also passed the hosted [GitHub Actions workflow](https://github.com/fredsevmartins/OpenPKLab/actions/runs/40102150733), including the automated suite, package build and authenticated container smoke test. Check the repository's Actions page for subsequent commit results.
 
 ## ChatGPT and publication boundaries
 
 Official OpenAI MCP/authentication/connection documentation was consulted directly on the validation date. OAuth resource discovery, tool annotations/profile metadata and JWT resource-server policy were tested automatically. **An actual ChatGPT login/consent/conversation was not executed.** A researcher must configure their HTTPS endpoint and identity provider and complete the interactive flow in `CHATGPT_SETUP.md`.
 
-Git read access and receive-pack dry-run succeeded. At this report's preparation, requests to `api.github.com` were denied by the environment egress proxy (CONNECT 403), preventing GitHub visibility inspection/change and release API operations. An unauthenticated repository page returned 404, so public visibility could not be established. The allowed-domain requirement was saved in the cloud configuration draft; saving that draft does not apply it to the current instance. No v0.1.0 release is claimed until the implementation is publicly accessible and the release API operation succeeds. See the delivery message for the actual commit/push outcome.
+The implementation was committed and pushed to `main`. GitHub API access became available after the initial environment setup, but changing repository visibility was rejected with `403 Resource not accessible by integration`; the API reported the repository as private. A v0.1.0 release draft with release notes was created, while release-asset uploads were denied at `uploads.github.com`. Public visibility must be changed by the repository owner in GitHub settings before public-release acceptance can be claimed. A draft is not a published release. See the delivery message and GitHub for the current publication state.
 
 ## Limits
 

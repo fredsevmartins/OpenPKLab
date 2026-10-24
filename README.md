@@ -4,6 +4,20 @@ An MIT-licensed, self-hosted scientific electronic laboratory notebook for in vi
 
 **v0.1.0 is a research MVP.** It supports one researcher/workspace per server instance. Computational screening and exploratory NCA are not clinical or regulatory validation. A ChatGPT connection requires a compatible reachable endpoint and configured OAuth; an actual ChatGPT session is a separate acceptance check.
 
+## Visual workflow and quickstart
+
+[![OpenPKLab workflow: install, connect, create an experiment, upload original data, organize and validate, run scientific plugins, review hints, export the notebook.](docs/assets/openpklab-workflow.png)](docs/QUICKSTART.md)
+
+Open the [full-size graphic](docs/assets/openpklab-workflow.png) or follow the [eight-step illustrated guide](docs/QUICKSTART.md) for installation, ChatGPT connection, actual file upload, scientific analysis and notebook export. The graphic uses synthetic data from the bundled example.
+
+After installing dependencies, run the complete local MCP workflow:
+
+```bash
+uv run --frozen python examples/mcp_workflow.py --data-dir .data
+```
+
+It creates a fresh synthetic experiment, checks the known NCA results, saves a derived figure and prints the exported ZIP path. It uses a real local MCP client; it does not claim an actual ChatGPT connection test.
+
 ## Install and start
 
 Python 3.12+ and [uv](https://docs.astral.sh/uv/) are required for the locked development installation:
